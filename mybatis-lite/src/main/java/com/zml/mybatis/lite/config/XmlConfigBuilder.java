@@ -70,6 +70,55 @@ public class XmlConfigBuilder {
 					MappedStatement mappedStatement = new MappedStatement();
 					mappedStatement.setId(id);
 					mappedStatement.setSql(sql);
+					mappedStatement.setSqlType("select");
+					if (StringUtils.isNotBlank(parameterType))
+						mappedStatement.setParameterType(Class.forName(parameterType));
+					if (StringUtils.isNotBlank(resultType))
+						mappedStatement.setResultType(Class.forName(resultType));
+					mappedStatementMap.put(namespace + "#" + id, mappedStatement);
+				}
+				List<Element> updateElement = mapperRootElement.selectNodes("//update");
+				for (Element element : updateElement) {
+					String id = element.attributeValue("id");
+					String parameterType = element.attributeValue("parameterType");
+					String resultType = element.attributeValue("resultType");
+					String sql = element.getTextTrim();
+					MappedStatement mappedStatement = new MappedStatement();
+					mappedStatement.setId(id);
+					mappedStatement.setSql(sql);
+					mappedStatement.setSqlType("update");
+					if (StringUtils.isNotBlank(parameterType))
+						mappedStatement.setParameterType(Class.forName(parameterType));
+					if (StringUtils.isNotBlank(resultType))
+						mappedStatement.setResultType(Class.forName(resultType));
+					mappedStatementMap.put(namespace + "#" + id, mappedStatement);
+				}
+				List<Element> insertElement = mapperRootElement.selectNodes("//insert");
+				for (Element element : insertElement) {
+					String id = element.attributeValue("id");
+					String parameterType = element.attributeValue("parameterType");
+					String resultType = element.attributeValue("resultType");
+					String sql = element.getTextTrim();
+					MappedStatement mappedStatement = new MappedStatement();
+					mappedStatement.setId(id);
+					mappedStatement.setSql(sql);
+					mappedStatement.setSqlType("insert");
+					if (StringUtils.isNotBlank(parameterType))
+						mappedStatement.setParameterType(Class.forName(parameterType));
+					if (StringUtils.isNotBlank(resultType))
+						mappedStatement.setResultType(Class.forName(resultType));
+					mappedStatementMap.put(namespace + "#" + id, mappedStatement);
+				}
+				List<Element> deleteElement = mapperRootElement.selectNodes("//delete");
+				for (Element element : deleteElement) {
+					String id = element.attributeValue("id");
+					String parameterType = element.attributeValue("parameterType");
+					String resultType = element.attributeValue("resultType");
+					String sql = element.getTextTrim();
+					MappedStatement mappedStatement = new MappedStatement();
+					mappedStatement.setId(id);
+					mappedStatement.setSql(sql);
+					mappedStatement.setSqlType("delete");
 					if (StringUtils.isNotBlank(parameterType))
 						mappedStatement.setParameterType(Class.forName(parameterType));
 					if (StringUtils.isNotBlank(resultType))

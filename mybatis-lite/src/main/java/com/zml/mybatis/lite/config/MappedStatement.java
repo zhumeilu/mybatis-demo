@@ -15,6 +15,18 @@ public class MappedStatement {
 	private String sql;
 	private Class parameterType;
 	private Class resultType;
+	/**
+	 * sql类型,insert,update,delete,select
+	 */
+	private String sqlType;
+
+	public String getSqlType() {
+		return sqlType;
+	}
+
+	public void setSqlType(String sqlType) {
+		this.sqlType = sqlType;
+	}
 
 	public String getId() {
 		return id;

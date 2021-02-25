@@ -1,10 +1,13 @@
 <mapper namespace="com.zml.mybatis.test.mapper.TestUserMapper">
 
     <select id="selectOne" parameterType="java.lang.Integer" resultType="com.zml.mybatis.test.domain.TestUser">
-        select * from test_user where id = #{id}
+        select * from test_user where id = # {id}
     </select>
 
     <select id="selectList" resultType="com.zml.mybatis.test.domain.TestUser">
         select * from test_user
     </select>
+    <insert id="insert" resultType="java.lang.Integer" parameterType="com.zml.mybatis.test.domain.TestUser">
+        insert into test_user(id,name) values(# {id},# {name})
+    </insert>
 </mapper>

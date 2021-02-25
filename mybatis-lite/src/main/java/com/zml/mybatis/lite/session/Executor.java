@@ -14,7 +14,6 @@ public interface Executor {
 
 	<E> List<E> query(Configuration configuration, MappedStatement mappedStatement, Object param);
 
-	boolean execute(Configuration configuration, MappedStatement mappedStatement, Object param);
 	Integer executeUpdate(Configuration configuration, MappedStatement mappedStatement, Object param);
 
 	void close();

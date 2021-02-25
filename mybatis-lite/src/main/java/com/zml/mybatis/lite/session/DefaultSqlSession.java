@@ -35,7 +35,7 @@ public class DefaultSqlSession implements SqlSession {
 	}
 
 	@Override public <T> Integer insert(String statementId, Object param) {
-	return this.update(statementId,param);
+		return this.update(statementId, param);
 	}
 
 	@Override public <T> Integer update(String statementId, Object param) {
@@ -45,7 +45,7 @@ public class DefaultSqlSession implements SqlSession {
 	}
 
 	@Override public <T> Integer delete(String statementId, Object param) {
-		return this.update(statementId,param);
+		return this.update(statementId, param);
 	}
 
 	@Override public void close() {
@@ -58,13 +58,35 @@ public class DefaultSqlSession implements SqlSession {
 			@Override public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 				String methodName = method.getName();
 				String clazzName = method.getDeclaringClass().getName();
-				String statementId = clazzName+"#"+methodName;
+				String statementId = clazzName + "#" + methodName;
 				MappedStatement mappedStatement = configuration.getMappedStatementMap().get(statementId);
-				List<E> query = executor.query(configuration, mappedStatement, args);
-				return query;
+				String sqlType = mappedStatement.getSqlType();
+				Object param = null;
+				Object result = null;
+				if (args!=null&&args.length > 0) {
+					param = args[0];
+				}
+				switch (sqlType) {
+				case "select":
+					if (method.getReturnType().isAssignableFrom(List.class)) {
+						result = selectList(statementId, param);
+					} else {
+						result = selectOne(statementId, param);
+					}
+					break;
+				case "insert":
+					result = insert(statementId, param);
+					break;
+				case "update":
+					result = update(statementId, param);
+					break;
+				case "delete":
+					result = delete(statementId, param);
+					break;
+				}
+				return result;
 			}
 		});
-
 		return o;
 	}
 }

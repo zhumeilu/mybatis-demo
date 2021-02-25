@@ -32,19 +32,30 @@ public class SimpleExecutor implements Executor {
 			//PreparedStatement接口
 			String sql = mappedStatement.getSql();
 			Class parameterType = mappedStatement.getParameterType();
-			PreparedStatement preparedStatement = connection.prepareStatement(sql);
 			BoundSql boundSql = boundSql(sql);
 			String sqlText = boundSql.getSqlText();
+			System.out.println("sql:"+sqlText);
+			PreparedStatement preparedStatement = connection.prepareStatement(sqlText);
 			//设置sql参数
-			List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
-			for (int i = 0; i < parameterMappings.size(); i++) {
-				String content = parameterMappings.get(i).getContent();
-				Field declaredField = parameterType.getDeclaredField(content);
-				declaredField.setAccessible(true);
-				Object o = declaredField.get(param);
-				preparedStatement.setObject(i + 1, o);
+			//判断该参数是否为简单对象
+			if(param.getClass().isPrimitive()
+					||param.getClass().isAssignableFrom(String.class)
+					||param.getClass().isAssignableFrom(Character.class)
+					||param instanceof Number
+					){
+				preparedStatement.setObject(1, param);
+			}else{
+				List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
+				for (int i = 0; i < parameterMappings.size(); i++) {
+					String content = parameterMappings.get(i).getContent();
+					Field declaredField = parameterType.getDeclaredField(content);
+					declaredField.setAccessible(true);
+					Object o = declaredField.get(param);
+					preparedStatement.setObject(i + 1, o);
+				}
 			}
-			ResultSet resultSet = preparedStatement.executeQuery(sqlText);
+
+			ResultSet resultSet = preparedStatement.executeQuery();
 
 			Class resultType = mappedStatement.getResultType();
 			// 遍历查询结果集
@@ -73,54 +84,18 @@ public class SimpleExecutor implements Executor {
 		return result;
 	}
 
-	@Override public boolean execute(Configuration configuration, MappedStatement mappedStatement, Object param) {
-		try {
-			DataSource dataSource = configuration.getDataSource();
-			//获取连接
-			connection = dataSource.getConnection();
-			//PreparedStatement接口
-			String sql = mappedStatement.getSql();
-			Class parameterType = mappedStatement.getParameterType();
-			PreparedStatement preparedStatement = connection.prepareStatement(sql);
-			BoundSql boundSql = boundSql(sql);
-			String sqlText = boundSql.getSqlText();
-
-			//设置sql参数
-			List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
-			for (int i = 0; i < parameterMappings.size(); i++) {
-				String content = parameterMappings.get(i).getContent();
-				Field declaredField = parameterType.getDeclaredField(content);
-				declaredField.setAccessible(true);
-				Object o = declaredField.get(param);
-				preparedStatement.setObject(i + 1, o);
-			}
-			boolean execute = preparedStatement.execute(sqlText);
-			return execute;
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}finally {
-			//关闭连接
-			try {
-				connection.close();
-			} catch (SQLException throwables) {
-				throwables.printStackTrace();
-			}
-		}
-		return false;
-	}
-
 	@Override public Integer executeUpdate(Configuration configuration, MappedStatement mappedStatement, Object param) {
 		try {
 			DataSource dataSource = configuration.getDataSource();
 			//获取连接
 			connection = dataSource.getConnection();
 			//PreparedStatement接口
-			String sql = mappedStatement.getSql();
 			Class parameterType = mappedStatement.getParameterType();
-			PreparedStatement preparedStatement = connection.prepareStatement(sql);
+			String sql = mappedStatement.getSql();
 			BoundSql boundSql = boundSql(sql);
 			String sqlText = boundSql.getSqlText();
+			System.out.println("sql:"+sqlText);
+			PreparedStatement preparedStatement = connection.prepareStatement(sqlText);
 
 			//设置sql参数
 			List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
@@ -131,7 +106,7 @@ public class SimpleExecutor implements Executor {
 				Object o = declaredField.get(param);
 				preparedStatement.setObject(i + 1, o);
 			}
-			Integer execute = preparedStatement.executeUpdate(sqlText);
+			Integer execute = preparedStatement.executeUpdate();
 			return execute;
 
 		} catch (Exception e) {

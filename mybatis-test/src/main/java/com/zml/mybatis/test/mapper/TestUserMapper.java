@@ -13,4 +13,5 @@ public interface TestUserMapper {
 
 	TestUser selectOne(Integer id);
 	List<TestUser> selectList();
+	Integer insert(TestUser testUser);
 }
